@@ -1,43 +1,60 @@
-let score = 0;
-let start = 0;
-let end = 0;
-let length = 0;
-let calculate = false;
 
-function newRound() {
-    let gameTime = randint(500, 5000);
-    calculate = true;
-    music.playTone(Note.C, gameTime);
+let length = 0
+let start = 0
+let end = 0
+let time = 0
+let deltaTime = 0
+let score = 0
+
+function newRound(){
+    length = randint(500, 5000)
+    music.playTone(Note.C, length)
 }
 
-//if (calculate = true) {
-//    basic.forever(function () {
-        if (input.buttonIsPressed(Button.A)) {
-            start = control.millis();
-            console.log(start);
-            while (!input.buttonIsPressed(Button.A)) {
-                end = control.millis();
-                console.log("kkt");
-                let time = Math.abs(end - start);
-                if (time < 200) {
-                    score = 3;
-                    console.log(score);
-                    calculate = false;
-                } else if (time > 200 && time < 300) {
-                    score = 2;
-                    console.log(score);
-                    calculate = false;
-                } else if (time > 300 && time < 500) {
-                    score = 1;
-                } else {
-                    score = 0;
-                    console.log(score);
-                    calculate = false;
-                }
-            }
-        }
-//    });
-//}
 
-console.log("ne");
-newRound();
+function pressed() {
+    start = control.millis()
+}
+
+function released(){
+    end = control.millis()
+    time = Math.abs(end - start)
+    deltaTime = Math.abs(length - time)
+    console.log(length)
+    console.log(time)
+    if (deltaTime < 200) {
+        score += 3
+        basic.showNumber(score)
+    } else if(deltaTime > 200 && deltaTime < 300){
+        score += 2
+        basic.showNumber(score)
+    } else if (deltaTime > 300 && deltaTime < 400){
+        score += 1
+        basic.showNumber(score)
+    } else{
+        basic.showNumber(score)
+    }
+
+     newRound()
+ }
+
+let wasPressed = false
+
+newRound()
+
+basic.forever(function() {
+    if(score >= 10){
+        basic.showString("Konec Hry!")
+    }
+    if (input.buttonIsPressed(Button.A)) {
+        if (!wasPressed) {
+            pressed()
+        }
+        wasPressed = true
+    } else {
+        if (wasPressed) {
+            released()
+        }
+        wasPressed = false
+    }
+})
